@@ -175,13 +175,65 @@
 </template>
 
 <script>
-export default {
-  name: 'MyLayout',
+import auth from 'src/auth'
 
+export default {
+  name: 'index',
+  components: {
+  },
   data () {
     return {
-      leftDrawerOpen: false
+      leftDrawerOpen: this.$q.platform.is.desktop,
+      user: null
     }
+  },
+  computed: {
+    authenticated () {
+      return this.$data.user !== null
+    }
+  },
+  methods: {
+    goTo (route) {
+      this.$router.push({ name: route })
+    },
+    signout () {
+      auth.signout()
+        .then(() => {
+          this.$q.notify({ type: 'positive', message: 'You are now logged out, sign in again to continue to work' })
+        })
+        .catch(() => {
+          this.$q.notify({ type: 'positive', message: 'Cannot logout, please check again in a few minutes' })
+        })
+    },
+    setUser (user) {
+      this.$data.user = user
+    }
+  },
+  mounted () {
+    // Check if there is already a session running
+    auth.authenticate()
+      .then((user) => {
+        this.setUser(user)
+        this.$q.notify({ type: 'positive', message: 'Restoring previous session' })
+      })
+      .catch(_ => {
+        this.setUser(null)
+        this.$router.push({ name: 'home' })
+      })
+
+    // On successful login
+    auth.onAuthenticated((user) => {
+      this.setUser(user)
+      this.$router.push({ name: 'home' })
+    })
+
+    // On logout
+    auth.onLogout(() => {
+      this.setUser(null)
+      this.$router.push({ name: 'home' })
+    })
+  },
+  beforeDestroy () {
   }
 }
 </script>

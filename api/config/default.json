@@ -1,0 +1,53 @@
+{
+  "host": "localhost",
+  "port": 3030,
+  "public": "../public/",
+  "paginate": {
+    "default": 10,
+    "max": 50
+  },
+  "ts": true,
+  "authentication": {
+    "entity": "user",
+    "service": "users",
+    "secret": "h2N23ivrkESvub8daBueMpGX8ZI=",
+    "authStrategies": [
+      "jwt",
+      "local"
+    ],
+    "jwtOptions": {
+      "header": {
+        "typ": "access"
+      },
+      "audience": "https://yourdomain.com",
+      "issuer": "feathers",
+      "algorithm": "HS256",
+      "expiresIn": "1d"
+    },
+    "local": {
+      "usernameField": "email",
+      "passwordField": "password"
+    },
+    "oauth": {
+      "redirect": "/",
+      "google": {
+        "key": "307017809042-1bps9t3p9e36ur1d6c6ms3bfbi095bq5.apps.googleusercontent.com",
+        "secret": "jqjiNjxGSngVqhrP8e6TXN0T",
+        "scope": [
+          "email",
+          "profile",
+          "openid"
+        ]
+      },
+      "facebook": {
+        "key": "2145076132384553",
+        "secret": "86c2a9ca92acb0784a7791a190cc1aaf"
+      },
+      "twitter": {
+        "key": "<twitter oauth key>",
+        "secret": "<twitter oauth secret>"
+      }
+    }
+  },
+  "nedb": "../data"
+}
