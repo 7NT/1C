@@ -14,7 +14,7 @@ declare module './declarations' {
 class GoogleStrategy extends OAuthStrategy {
   async getEntityData (profile: OAuthProfile, existing: any, params: Params) {
     const baseData = await super.getEntityData(profile, existing, params);
-
+    console.log(baseData, profile);
     return {
       ...baseData,
       email: profile
@@ -25,7 +25,7 @@ class GoogleStrategy extends OAuthStrategy {
 class FacebookStrategy extends OAuthStrategy {
   async getEntityData (profile: OAuthProfile, existing: any, params: Params) {
     const baseData = await super.getEntityData(profile, existing, params);
-
+    console.log(baseData, profile);
     return {
       ...baseData,
       email: profile

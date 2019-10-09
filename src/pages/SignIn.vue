@@ -1,45 +1,60 @@
 <template>
   <q-page class="flex flex-center">
     <q-dialog
-      v-model="showDialog"
-      :title="title"
-      @ok="onOk"
-      @hide="onHide"
+      v-model="show"
+      persistent
     >
-      <div slot="body">
-        <div class="row q-mb-md">
+      <q-card style="min-width: 400px">
+        <q-card-section>
+          <div class="text-h6">Sign In:</div>
+        </q-card-section>
+
+        <q-card-section>
           <q-input
             v-model="email"
+            filled
             type="email"
-            name="email"
-            stack-label="E-mail"
-            class="full-width"
-            autofocus
+            hint="Email"
           />
-        </div>
-        <div class="row">
+
           <q-input
             v-model="password"
-            type="password"
-            name="email"
-            stack-label="Password"
-            class="full-width"
+            filled
+            :type="isPwd ? 'password' : 'text'"
+            hint="Password"
+          >
+            <template v-slot:append>
+              <q-icon
+                :name="isPwd ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer"
+                @click="isPwd = !isPwd"
+              />
+            </template>
+          </q-input>
+
+        </q-card-section>
+
+        <q-card-actions
+          align="right"
+          class="text-primary"
+        >
+          <a
+            class="button button-primary block"
+            href="http://localhost:3030/oauth/google"
+          >Google</a>
+          <a
+            class="button button-primary block"
+            href="http://localhost:3030/oauth/facebook"
+          >Facebook</a>
+          <q-btn
+            flat
+            label="Sign In"
+            v-close-popup
+            @click="signin('')"
           />
-        </div>
-      </div>
+        </q-card-actions>
+      </q-card>
     </q-dialog>
-    <a
-      class="button button-primary block"
-      href="/oauth/google"
-    >
-      Login with Google
-    </a>
-    <a
-      class="button button-primary block"
-      href="/oauth/facebook"
-    >
-      Login with Facebook
-    </a>
   </q-page>
 </template>
 
@@ -49,10 +64,10 @@ import auth from 'src/auth'
 export default {
   data () {
     return {
-      showDialog: true,
+      show: true,
       email: null,
-      password: null,
-      title: null
+      password: '',
+      isPwd: true
     }
   },
   computed: {
@@ -67,29 +82,8 @@ export default {
         this.goHome()
       }, 50)
     },
-    onOk (data) {
-      if (this.isRegistration()) {
-        this.register(this.email, this.password)
-          .then(() => {
-            return this.login(this.email, this.password)
-          })
-          .then(_ => {
-            this.$q.notify({ type: 'positive', message: 'You are now logged in' })
-          })
-          .catch(_ => {
-            this.$q.notify({ type: 'positive', message: 'Cannot register, please check your e-mail or password' })
-            this.goHome()
-          })
-      } else {
-        this.login(this.email, this.password)
-          .then(_ => {
-            this.$q.notify({ type: 'positive', message: 'You are now logged in' })
-          })
-          .catch(_ => {
-            this.$q.notify({ type: 'positive', message: 'Cannot sign in, please check your e-mail or password' })
-            this.goHome()
-          })
-      }
+    signin (data) {
+      console.log('signin', data)
     },
     isRegistration () {
       return this.$route.name === 'register'

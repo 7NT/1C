@@ -24,6 +24,13 @@ const routes = [{
     meta: {
       requiresAuth: true
     }
+  }, {
+    path: '/lobby',
+    name: 'lobby',
+    component: () => import('pages/Lobby'),
+    meta: {
+      requiresAuth: true
+    }
   }
   ]
 }]
