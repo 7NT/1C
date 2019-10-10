@@ -24,6 +24,7 @@ const auth = {
     return api
       .authenticate()
       .then(response => {
+        console.log('authenticat', response)
         return this.fetchUser(response.accessToken)
       })
       .then(user => {
@@ -61,6 +62,7 @@ const auth = {
 
   onAuthenticated (callback) {
     api.on('authenticated', response => {
+      console.log('authenticated', response)
       this.fetchUser(response.accessToken)
         .then(user => {
           this.user = user
@@ -85,6 +87,10 @@ const auth = {
       email: email,
       password: password
     })
+  },
+
+  getRedir () {
+    return api.getRedir(data);
   }
 }
 
