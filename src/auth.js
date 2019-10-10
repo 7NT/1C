@@ -90,7 +90,7 @@ const auth = {
   },
 
   getRedir () {
-    return api.getRedir(data);
+    return api.getRedir();
   }
 }
 
