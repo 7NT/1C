@@ -6,6 +6,6 @@
 
 <script>
 export default {
-  name: 'Lobby'
+  name: 'Profile'
 }
 </script>

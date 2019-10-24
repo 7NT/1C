@@ -9,40 +9,34 @@ const auth = {
     return this.user
   },
 
-  fetchUser (accessToken) {
-    return api.passport
-      .verifyJWT(accessToken)
-      .then(payload => {
-        return api.service('users').get(payload.userId)
-      })
-      .then(user => {
-        return Promise.resolve(user)
-      })
-  },
-
-  authenticate () {
-    return api
-      .authenticate()
-      .then(response => {
-        console.log('authenticat', response)
-        return this.fetchUser(response.accessToken)
-      })
-      .then(user => {
-        this.user = user
-        return Promise.resolve(user)
-      })
-      .catch(err => {
-        this.user = null
-        return Promise.reject(err)
-      })
+  setUser (user) {
+    this.user = user
   },
 
   authenticated () {
     return this.user != null
   },
 
+  register (credentials) {
+    // First create the user
+    return api.service('users').create(credentials)
+  },
+
+  login (credentials) {
+    if (!credentials) {
+      // Try to authenticate using an existing token
+      return api.reAuthenticate()
+    } else {
+      // Otherwise log in with the `local` strategy using the credentials we got
+      return api.authenticate({
+        strategy: 'local',
+        ...credentials
+      })
+    }
+  },
+
   signout () {
-    api.service('players').remove(this.user._id)
+    // api.service('players').remove(this.user._id)
     return api
       .logout()
       .then(() => {
@@ -62,35 +56,9 @@ const auth = {
 
   onAuthenticated (callback) {
     api.on('authenticated', response => {
-      console.log('authenticated', response)
-      this.fetchUser(response.accessToken)
-        .then(user => {
-          this.user = user
-          callback(this.user)
-        })
-        .catch(() => {
-          callback(this.user)
-        })
+      this.user = response.user
+      callback(this.user)
     })
-  },
-
-  register (email, password) {
-    return api.service('users').create({
-      email: email,
-      password: password
-    })
-  },
-
-  login (email, password) {
-    return api.authenticate({
-      strategy: 'local',
-      email: email,
-      password: password
-    })
-  },
-
-  getRedir () {
-    return api.getRedir();
   }
 }
 

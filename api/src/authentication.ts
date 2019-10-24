@@ -1,5 +1,5 @@
 import { ServiceAddons, Params } from '@feathersjs/feathers';
-import { AuthenticationService, JWTStrategy } from '@feathersjs/authentication';
+import { AuthenticationService, JWTStrategy, AuthenticationRequest } from '@feathersjs/authentication';
 import { LocalStrategy } from '@feathersjs/authentication-local';
 import { expressOauth, OAuthStrategy, OAuthProfile } from '@feathersjs/authentication-oauth';
 import axios from 'axios';
@@ -23,7 +23,7 @@ class GoogleStrategy extends OAuthStrategy {
 }
 
 class FacebookStrategy extends OAuthStrategy {
-  async getProfile (_data: AuthenticationRequest, _params: Params) {
+  async getProfile (authResult: AuthenticationRequest, _params: Params) {
     // This is the oAuth access token that can be used
     // for Facebook API requests as the Bearer token
     const accessToken = authResult.access_token;

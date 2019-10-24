@@ -1,56 +1,47 @@
 <template>
-  <q-page class="flex flex-center">
+  <q-page class='flex flex-center'>
     <q-dialog
-      v-model="show"
+      v-model='show'
       persistent
     >
-      <q-card style="min-width: 400px">
+      <q-card style='min-width: 400px'>
         <q-card-section>
-          <div class="text-h6">Sign In:</div>
+          <div class='text-h6'>{{ title }}:</div>
         </q-card-section>
 
         <q-card-section>
           <q-input
-            v-model="email"
+            v-model='email'
             filled
-            type="email"
-            hint="Email"
+            type='email'
+            hint='Email'
           />
 
           <q-input
-            v-model="password"
+            v-model='password'
             filled
             :type="isPwd ? 'password' : 'text'"
-            hint="Password"
+            hint='Password'
           >
             <template v-slot:append>
               <q-icon
                 :name="isPwd ? 'visibility_off' : 'visibility'"
-                class="cursor-pointer"
-                @click="isPwd = !isPwd"
+                class='cursor-pointer'
+                @click='isPwd = !isPwd'
               />
             </template>
           </q-input>
-
         </q-card-section>
 
         <q-card-actions
-          align="right"
-          class="text-primary"
+          align='right'
+          class='text-primary'
         >
-          <a
-            class="button button-primary block"
-            href="http://localhost:3030/oauth/google"
-          >Google</a>
-          <a
-            class="button button-primary block"
-            href="http://localhost:3030/oauth/facebook"
-          >Facebook</a>
           <q-btn
-            flat
-            label="Sign In"
+            push
+            :label=title
             v-close-popup
-            @click="signin('')"
+            @click="onOk()"
           />
         </q-card-actions>
       </q-card>
@@ -65,43 +56,77 @@ export default {
   data () {
     return {
       show: true,
+      title: null,
       email: null,
       password: '',
       isPwd: true
     }
   },
-  computed: {
-  },
+  computed: {},
   methods: {
-    goHome () {
-      this.$router.push({ name: 'home' })
+    goTo (route) {
+      this.$router.push({ name: route })
     },
-    onHide () {
-      // Workaround needed because of timing issues (sequencing of 'hide' and 'ok' events) ...
-      setTimeout(() => {
-        this.goHome()
-      }, 50)
-    },
-    signin (data) {
-      console.log('signin', data)
+    getCredentials () {
+      const user = {
+        email: this.$data.email,
+        password: this.$data.password
+      }
+      return user
     },
     isRegistration () {
       return this.$route.name === 'register'
     },
-    register (email, password) {
-      return auth.register(email, password)
+    onOk () {
+      const credential = this.getCredentials()
+      if (this.isRegistration()) {
+        this.register(credential)
+          .then(() => {
+            this.login(credential)
+          })
+          .then(() => {
+            this.$q.notify({
+              color: 'positive',
+              message: 'You are now logged in'
+            })
+          })
+          .catch(() => {
+            this.$q.notify({
+              color: 'positive',
+              message: 'Cannot register, please check your e-mail or password'
+            })
+            this.goHome()
+          })
+      } else {
+        this.login(credential)
+          .then(() => {
+            this.$q.notify({
+              color: 'positive',
+              message: 'You are now logged in'
+            })
+          })
+          .catch(() => {
+            this.$q.notify({
+              color: 'positive',
+              message: 'Cannot sign in, please check your e-mail or password'
+            })
+            this.goHome()
+          })
+      }
     },
-    login (email, password) {
-      return auth.login(email, password)
+    register (credentials) {
+      return auth.register(credentials)
+    },
+    login (credentials) {
+      return auth.login(credentials)
     }
   },
   mounted () {
     this.title = this.isRegistration() ? 'Register' : 'Sign In'
   },
-  beforeDestroy () {
-  }
+  beforeDestroy () { }
 }
 </script>
 
-<style lang="styl">
+<style lang='styl'>
 </style>

@@ -18,9 +18,9 @@ const routes = [{
     name: 'register',
     component: () => import('pages/SignIn')
   }, {
-    path: '/chat',
-    name: 'chat',
-    component: () => import('pages/Chat'),
+    path: '/profile',
+    name: 'profile',
+    component: () => import('pages/Profile'),
     meta: {
       requiresAuth: true
     }

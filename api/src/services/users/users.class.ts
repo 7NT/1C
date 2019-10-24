@@ -14,7 +14,7 @@ interface UserData {
   email: string;
   password: string;
   avatar?: string;
-  socialnetwork_id?: string;
+  oauth_id?: string;
 }
 
 export class Users extends Service {
@@ -22,22 +22,26 @@ export class Users extends Service {
     super(options);
   }
 
-  create (data: UserData, params?: Params) {
+  create(data: UserData, params?: Params) {
+    console.log(data);
     // This is the information we want from the user signup data
-    const { email, password, socialnetwork_id } = data;
+    const { email, password, oauth_id } = data;
     // Gravtar uses MD5 hashes from an email address (all lowercase) to get the image
-    const hash = crypto.createHash('md5').update(email.toLocaleLowerCase()).digest('hex');
+    const hash = crypto
+      .createHash('md5')
+      .update(email.toLocaleLowerCase())
+      .digest('hex');
     // The full avatar URL
     const avatar = `${gravatarUrl}/${hash}?${query}`;
     // The complete user
     const UserData = {
       email,
       password,
-      socialnetwork_id,
+      oauth_id,
       avatar
     };
 
     // Call the orgiginal 'create method with exisiting 'params' and new data
     return super.create(UserData, params);
   }
-};
+}
