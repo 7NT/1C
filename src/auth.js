@@ -5,21 +5,16 @@ const auth = {
   // keep track of the logged in user
   user: null,
 
-  getUser () {
-    return this.user
-  },
-
-  setUser (user) {
-    this.user = user
-  },
-
   authenticated () {
     return this.user != null
   },
 
-  register (credentials) {
-    // First create the user
-    return api.service('users').create(credentials)
+  register (credential) {
+    // return api.service('users').create(credential)
+    return api.service('users').create({
+      email: credential.email,
+      password: credential.password
+    })
   },
 
   login (credentials) {
@@ -35,16 +30,13 @@ const auth = {
     }
   },
 
-  signout () {
+  async signout () {
     // api.service('players').remove(this.user._id)
-    return api
-      .logout()
-      .then(() => {
-        this.user = null
-      })
-      .catch(err => {
-        return Promise.reject(err)
-      })
+    try {
+      await api.logout()
+    } catch (err) {
+      return Promise.reject(err)
+    }
   },
 
   onLogout (callback) {

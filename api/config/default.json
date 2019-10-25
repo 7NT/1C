@@ -6,11 +6,10 @@
     "default": 10,
     "max": 50
   },
-  "ts": true,
   "authentication": {
     "entity": "user",
     "service": "users",
-    "secret": "h2N23ivrkESvub8daBueMpGX8ZI=",
+    "secret": "wKyTZq/EErRlZaXbj1U0IPg+ASI=",
     "authStrategies": [
       "jwt",
       "local"

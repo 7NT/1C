@@ -80,22 +80,24 @@ export default {
     onOk () {
       const credential = this.getCredentials()
       if (this.isRegistration()) {
-        this.register(credential)
-          .then(() => {
-            this.login(credential)
+        auth.register(credential)
+          .then((user) => {
+            return this.login(credential)
           })
-          .then(() => {
+          .then((user) => {
             this.$q.notify({
               color: 'positive',
               message: 'You are now logged in'
             })
+            this.goTo('profile')
           })
-          .catch(() => {
+          .catch((err) => {
+            console.error(err)
             this.$q.notify({
               color: 'positive',
               message: 'Cannot register, please check your e-mail or password'
             })
-            this.goHome()
+            this.goTo('home')
           })
       } else {
         this.login(credential)
@@ -105,17 +107,18 @@ export default {
               message: 'You are now logged in'
             })
           })
-          .catch(() => {
+          .catch((err) => {
+            console.error(err)
             this.$q.notify({
               color: 'positive',
               message: 'Cannot sign in, please check your e-mail or password'
             })
-            this.goHome()
+            this.goTo('home')
           })
       }
     },
-    register (credentials) {
-      return auth.register(credentials)
+    register (credential) {
+      return auth.register(credential)
     },
     login (credentials) {
       return auth.login(credentials)

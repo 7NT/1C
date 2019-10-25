@@ -176,15 +176,13 @@ export default {
   components: {},
   data () {
     return {
-      leftDrawerOpen: this.$q.platform.is.desktop
+      leftDrawerOpen: this.$q.platform.is.desktop,
+      user: null
     }
   },
   computed: {
     authenticated () {
       return auth.authenticated()
-    },
-    user () {
-      return auth.getUser()
     }
   },
   methods: {
@@ -206,9 +204,6 @@ export default {
             message: 'Cannot logout, please check again in a few minutes'
           })
         })
-    },
-    setUser (user) {
-      auth.setUser(user)
     }
   },
   mounted () {
@@ -222,20 +217,19 @@ export default {
         })
       })
       .catch(_ => {
-        this.setUser(null)
         this.goTo('home')
       })
 
     // On successful login
     auth.onAuthenticated(user => {
       console.log('onAuthenticated', user)
-      // this.setUser(user)
+      this.user = user
       this.goTo('lobby')
     })
 
     // On logout
     auth.onLogout(() => {
-      // this.setUser(null)
+      this.user = null
       this.goTo('home')
     })
   },

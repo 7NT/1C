@@ -13,7 +13,6 @@ export default function(app: Application) {
   });
 
   app.on('login', (authResult: any, { connection }: any) => {
-    console.log('login', connection)
     // connection can be undefined if there is no
     // real-time connection, e.g. when logging in via REST
     if(connection) {

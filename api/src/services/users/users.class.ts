@@ -4,44 +4,40 @@ import crypto from 'crypto';
 import { Params } from 'express-serve-static-core';
 
 // The Gravatar image service
-const gravatarUrl = 'http://s.gravatar.com/avatar';
-// The size query.
+const gravatarUrl = 'https://s.gravatar.com/avatar';
+// The size query. Our chat needs 60px images
 const query = 's=60';
 
-// A type interface for our user ( it does not validate any data)
+// A type interface for our user (it does not validate any data)
 interface UserData {
   _id?: string;
   email: string;
   password: string;
   avatar?: string;
-  oauth_id?: string;
+  githubId?: string;
 }
 
-export class Users extends Service {
+export class Users extends Service<UserData> {
   constructor(options: Partial<NedbServiceOptions>, app: Application) {
     super(options);
   }
 
-  create(data: UserData, params?: Params) {
-    console.log(data);
+  create (data: UserData, params?: Params) {
     // This is the information we want from the user signup data
-    const { email, password, oauth_id } = data;
-    // Gravtar uses MD5 hashes from an email address (all lowercase) to get the image
-    const hash = crypto
-      .createHash('md5')
-      .update(email.toLocaleLowerCase())
-      .digest('hex');
+    const { email, password, githubId } = data;
+    // Gravatar uses MD5 hashes from an email address (all lowercase) to get the image
+    const hash = crypto.createHash('md5').update(email.toLowerCase()).digest('hex');
     // The full avatar URL
     const avatar = `${gravatarUrl}/${hash}?${query}`;
     // The complete user
-    const UserData = {
+    const userData = {
       email,
       password,
-      oauth_id,
+      githubId,
       avatar
     };
 
-    // Call the orgiginal 'create method with exisiting 'params' and new data
-    return super.create(UserData, params);
+    // Call the original `create` method with existing `params` and new data
+    return super.create(userData, params);
   }
 }

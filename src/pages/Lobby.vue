@@ -6,6 +6,15 @@
 
 <script>
 export default {
-  name: 'Lobby'
+  name: 'Lobby',
+  data () {
+    return {
+      user: null
+    }
+  },
+  created () {
+    this.user = this.$attrs.user
+    console.log('lobby', this.user)
+  }
 }
 </script>

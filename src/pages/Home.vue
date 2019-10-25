@@ -6,6 +6,15 @@
 
 <script>
 export default {
-  name: 'Home'
+  name: 'Home',
+  data () {
+    return {
+      user: null
+    }
+  },
+  created () {
+    console.log('home', this.$router)
+    this.user = this.$router.user
+  }
 }
 </script>
