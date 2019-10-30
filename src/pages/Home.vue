@@ -13,7 +13,7 @@ export default {
     }
   },
   created () {
-    console.log('home', this.$router)
+    this.$parent.page = 'Home'
     this.user = this.$router.user
   }
 }

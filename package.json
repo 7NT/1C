@@ -16,6 +16,7 @@
     "@feathersjs/feathers": "^4.3.4",
     "@feathersjs/socketio-client": "^4.3.4",
     "@quasar/extras": "^1.0.0",
+    "moment": "^2.24.0",
     "quasar": "^1.2.5",
     "socket.io-client": "^2.3.0",
     "vue-i18n": "^8.0.0"
