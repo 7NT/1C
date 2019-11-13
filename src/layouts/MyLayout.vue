@@ -41,15 +41,17 @@
         <q-btn
           flat
           round
-          @click="goTo('chat')"
-          v-show='authenticated'
+          @click="goTo('profile')"
+          v-if='authenticated'
         >
-          <q-icon name='chat' />
+          <q-avatar class='gt-xs'>
+            <img :src='user.avatar' />
+          </q-avatar>
           <q-tooltip
             anchor='bottom middle'
             self='top middle'
             :offset='[0, 20]'
-          >Chat</q-tooltip>
+          >Profile</q-tooltip>
         </q-btn>
         <q-btn
           flat
@@ -162,29 +164,17 @@
       </q-list>
     </q-drawer>
 
+    <q-page-container>
+      <router-view
+        :user='user'
+        :chats='chats'
+      ></router-view>
+    </q-page-container>
+
     <q-footer
       elevated
       v-if='authenticated'
     >
-      <q-expansion-item
-        default-opened
-        dense
-        icon='chat'
-        label='Messages'
-        header-class='chats'
-      >
-        <q-separator />
-        <q-card class='full-width chats'>
-          <q-chat-message
-            v-for='chat in chats'
-            :key='chat.id'
-            :text='[chat.text]'
-            :avatar='chat.from.avatar'
-            :stamp='chatDate(chat)'
-            :sent='isSent(chat) ? true : false'
-          />
-        </q-card>
-      </q-expansion-item>
       <q-toolbar class='bg-primary text-white rounded-borders'>
         <q-btn
           round
@@ -229,18 +219,13 @@
         />
       </q-toolbar>
     </q-footer>
-
-    <q-page-container>
-      <router-view :user='user'></router-view>
-    </q-page-container>
   </q-layout>
 </template>
 
 <script>
 import { openURL } from 'quasar'
 import { mapState, mapActions } from 'vuex'
-import moment from 'moment'
-import api from 'src/api'
+import { chatService, playerService, tableService } from 'src/api'
 import auth from 'src/auth'
 
 export default {
@@ -249,23 +234,24 @@ export default {
   data () {
     return {
       leftDrawerOpen: this.$q.platform.is.desktop,
+      splitterModel: 50, // start at 50%
       page: '',
-      user: null,
       chats: [],
-      chat: ''
+      chat: null,
+      user: null
     }
   },
   computed: {
-    ...mapState('jstore', ['chatTo', 'players']),
+    ...mapState('jstore', ['chatTo', 'players', 'tables']),
     authenticated () {
       return this.user != null
     }
   },
   methods: {
-    ...mapActions('jstore', ['setUser']),
+    ...mapActions('jstore', ['setUser', 'setPlayers', 'setTables']),
     openURL,
     goTo (route) {
-      this.$router.push({ name: route })
+      if (this.$route.name !== route) this.$router.push({ name: route })
     },
     signout () {
       auth
@@ -273,7 +259,7 @@ export default {
         .then(() => {
           this.$q.notify({
             type: 'positive',
-            message: 'You are now logged out, sign in again to continue to work'
+            message: 'You are now logged out, sign in again to continue to play'
           })
         })
         .catch(() => {
@@ -283,39 +269,67 @@ export default {
           })
         })
     },
-    setUser (user) {
-      this.$data.user = user
-      // this.$store.commit("jstore/setUser", user);
-      // this.setUser(user);
+    onServices () {
+      chatService.on('created', chat => {
+        this.chats.unshift(chat)
+      })
+      playerService.find().then(response => {
+        this.setPlayers(response.data)
+      })
+      playerService.on('created', player => {
+        this.onPlayer(player)
+      })
+      playerService.on('patched', player => {
+        this.onPlayer(player)
+      })
+      playerService.on('removed', player => {
+        player.state = -1
+        this.onPlayer(player)
+      })
+      tableService.find().then(response => {
+        this.setTables(response.data)
+        // this.setTables(response.data)
+        // let player = players.find(p => p.id === this.user._id)
+        // this.updatePlayer(player)
+      })
+      tableService.on('created', table => {
+        // this.onTable(table)
+      })
+      tableService.on('patched', table => {
+        // this.onTable(table)
+      })
+      tableService.on('removed', table => {
+        table.state = -1
+        // this.onTable(table)
+      })
     },
     onChat (event) {
       if (event.key === 'Enter') {
         this.send()
       }
     },
+    onPlayer (player) {
+      // this.setPlayer(player)
+    },
+    onTable (table) {
+      // this.setTable(table)
+    },
     send () {
-      if (this.$data.chat) {
+      if (this.chat) {
         let _chat = {
           from: {
             userId: this.user._id,
             avatar: this.user.avatar
           },
           to: this.chatTo || '#Lobby',
-          text: this.$data.chat
+          text: this.chat
         }
-        api
-          .service('chats')
-          .create(_chat)
+
+        chatService.create(_chat)
           .then(() => {
-            this.$data.chat = ''
+            this.chat = ''
           })
       }
-    },
-    isSent (chat) {
-      return chat.from.userId === this.user._id
-    },
-    chatDate (chat) {
-      return moment(chat.createdAt).format('MMM Do, hh:mm:ss')
     }
   },
   mounted () {
@@ -334,8 +348,8 @@ export default {
 
     // On successful login
     auth.onAuthenticated(user => {
-      console.log('onAuthenticated', user)
       this.user = user
+      this.onServices()
       this.goTo('lobby')
     })
 

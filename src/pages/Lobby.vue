@@ -1,85 +1,99 @@
 <template>
   <q-page>
     <!-- content -->
-    <q-splitter
-      v-model='splitterModel'
-      horizontal
-      stype='height: 400px'
-    >
-      <template v-slot:before>
-        <div class='q-pa-md'>
-          <q-tabs
-            v-model='roomId'
-            align='left'
-            dense
-            no-caps
-            inline-label
-            indicator-color='yellow'
-            class='bg-secondary text-white shadow-2'
-          >
-            <q-tab
-              v-for='r in rooms'
-              :key='r.name'
-              :name='r.name'
-              :icon='r.icon'
-              :label='r.name'
-              :disable='!r.open'
-            />
-          </q-tabs>
-
-          <q-separator />
-
-          <q-tab-panels
-            v-model='roomId'
-            animated
-          >
-            <q-tab-panel name='Lobby'>
-              <q-list
+    <div>
+      <q-splitter
+        v-model='splitterModel'
+        horizontal
+      >
+        <template v-slot:before>
+          <div class='q-pa-md'>
+            <q-card>
+              <q-tabs
+                v-model='roomId'
+                align='left'
                 dense
-                bordered
-                separator
+                no-caps
+                inline-label
+                indicator-color='yellow'
+                class='bg-secondary text-white shadow-2'
               >
-                <myTableList
-                  v-for='t in tables'
-                  :key='t.id'
-                  :myTable='t'
-                  v-on:onSit='onSit'
+                <q-tab
+                  v-for='r in rooms'
+                  :key='r.name'
+                  :name='r.name'
+                  :icon='r.icon'
+                  :label='r.name'
+                  :disable='!r.open'
                 />
-              </q-list>
-            </q-tab-panel>
+              </q-tabs>
 
-            <q-tab-panel name='My Table'>
-              <myTablePlay
-                :myPlayer='myPlayer'
-                v-on:onSit='onSit'
-                class='myTable'
-              />
-            </q-tab-panel>
-          </q-tab-panels>
-        </div>
-      </template>
+              <q-separator />
 
-      <template v-slot:after>
-        <div class='q-pa-md'>
-          <div class='full-width'>
-            <q-chat-message
-              v-for="chat in getChats('#Lobby')"
-              :key='chat.id'
-              :text='[chat.text]'
-              :avatar='chat.from.avatar'
-              :stamp='chatDate(chat)'
-              :sent='isSent(chat) ? true : false'
-            />
+              <q-tab-panels
+                v-model='roomId'
+                animated
+              >
+                <q-tab-panel name='Lobby'>
+                  <q-list
+                    dense
+                    bordered
+                    separator
+                  >
+                    <myTableList
+                      v-for='t in tables'
+                      :key='t.id'
+                      :myTable='t'
+                      v-on:onSit='onSit'
+                    />
+                  </q-list>
+                </q-tab-panel>
+
+                <q-tab-panel name='My Table'>
+                  <myTablePlay
+                    :myPlayer='myPlayer'
+                    v-on:onSit='onSit'
+                    class='myTable'
+                  />
+                </q-tab-panel>
+              </q-tab-panels>
+            </q-card>
           </div>
-        </div>
-      </template>
-    </q-splitter>
+        </template>
+
+        <template v-slot:after>
+          <div class="q-pa-md">
+            <q-expansion-item
+              default-opened
+              dense
+              icon='chat'
+              label='Messages'
+              header-class='chats'
+            >
+              <q-separator />
+              <q-card class='full-width chats'>
+                <q-chat-message
+                  v-for='chat in chats'
+                  :key='chat.id'
+                  :text='[chat.text]'
+                  :avatar='chat.from.avatar'
+                  :stamp='chatDate(chat)'
+                  :sent='isSent(chat) ? true : false'
+                />
+              </q-card>
+            </q-expansion-item>
+          </div>
+        </template>
+
+      </q-splitter>
+    </div>
   </q-page>
 </template>
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex'
-import api from 'src/api'
+import { playerService } from 'src/api'
+import moment from 'moment'
 import myTableList from 'src/components/myTableList'
 import myTablePlay from 'src/components/myTablePlay'
 
@@ -91,9 +105,10 @@ export default {
   },
   data () {
     return {
-      splitterModel: 50, // start at 50%
       user: null,
+      chats: [],
       myPlayer: null,
+      splitterModel: 50, // start at 50%
       roomId: 'Lobby',
       rooms: [
         {
@@ -126,7 +141,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('jstore', ['players', 'tables', 'chats']),
+    ...mapState('jstore', ['players', 'tables']),
     ...mapGetters('jstore', ['getChats'])
   },
   methods: {
@@ -134,16 +149,28 @@ export default {
       'setPlayers',
       'setTables',
       'setPlayer',
-      'setTable',
-      'setChats'
+      'setTable'
     ]),
+    isSent (chat) {
+      return chat.from.userId === this.user._id
+    },
+    chatDate (chat) {
+      return moment(chat.createdAt).format('MMM Do, hh:mm:ss')
+    },
     onSit (seat) {
-      api.service('players').patch(this.user._id, seat)
+      console.log(this.user, seat)
+      playerService.patch(this.user._id, seat)
     }
+  },
+  mounted () {
   },
   created () {
     this.$parent.page = 'Lobby'
     this.user = this.$attrs.user
+    this.chats = this.$attrs.chats
+  },
+  watch: {
+
   }
 }
 </script>

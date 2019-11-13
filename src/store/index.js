@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
+// import user from './user'
+// import table from './table'
 import jstore from './jstore'
 
 Vue.use(Vuex)
@@ -13,6 +15,7 @@ Vue.use(Vuex)
 export default function (/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
+      // user, table
       jstore
     },
 

@@ -11,9 +11,16 @@ const api = feathers()
 api.configure(socketio(socket))
 api.configure(auth())
 
-api.service('/users')
-api.service('/messages')
-api.service('/players')
-api.service('/tables')
+const userService = api.service('/users')
+const chatService = api.service('/chats')
+const playerService = api.service('/players')
+const tableService = api.service('/tables')
 
-export default api
+// export default api
+export {
+  api,
+  userService,
+  chatService,
+  playerService,
+  tableService
+}

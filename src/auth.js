@@ -1,5 +1,7 @@
 // Import the Feathers client module that we've created before
-import api from './api'
+import {
+  api
+} from './api'
 
 const auth = {
   // keep track of the logged in user
