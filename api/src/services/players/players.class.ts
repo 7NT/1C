@@ -21,7 +21,7 @@ export class Players extends Service {
   create (data: PlayerData, params?: Params) {
     // This is the information we want from the player enter lobby
     const { _id, avatar, state, tId, sId } = data;
-    console.log(data);
+    console.log('create', data);
     // The complete player
     const playerData = {
       _id,

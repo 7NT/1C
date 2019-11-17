@@ -7,7 +7,43 @@ export default function (app: Application) {
     return;
   }
 
-  const playerService = app.service('players');
+  const playerService = app.service('players')
+
+  // Join a channel given a user and connection
+  const joinChannels = (user:any, connection:any) => {
+    app.channel('authenticated').join(connection);
+    // Assuming that the chat room/user assignment is stored
+    // on an array of the user
+    /*
+    user.rooms.forEach((room:any) =>
+      app.channel(`rooms/${(roomId:any)}`).join(connection)
+    );
+    */
+    // Easily organize users by email and userid for things like messaging
+    // app.channel(`emails/${user.email}`).join(channel);
+    app.channel(`userIds/${user._id}`).join(connection);
+  }
+
+  // Get a user to leave all channels
+  const leaveChannels = (user:any) => {
+    app.channel(app.channels).leave((connection:any) =>
+      connection.user._id === user._id
+    );
+  }
+
+  // Leave and re-join all channels with new user information
+  const updateChannels = (user:any) => {
+    // Find all connections for this user
+    const { connections } = app.channel(app.channels).filter(connection =>
+      connection.user._id === user._id
+    );
+
+    // Leave all channels
+    leaveChannels(user);
+
+    // Re-join all channels with the updated user information
+    connections.forEach(connection => joinChannels(user, connection));
+  }
 
   app.on('connection', (connection: any) => {
     // On a new real-time connection, add it to the anonymous channel
@@ -29,7 +65,7 @@ export default function (app: Application) {
       app.channel('anonymous').leave(connection);
 
       // Add it to the authenticated user channel
-      app.channel('authenticated').join(connection);
+      // app.channel('authenticated').join(connection);
 
       // Channels can be named anything and joined on any condition 
 
@@ -41,7 +77,9 @@ export default function (app: Application) {
 
       // Easily organize users by email and userid for things like messaging
       // app.channel(`emails/${user.email}`).join(channel);
-      // app.channel(`userIds/$(user.id}`).join(channel);
+      // app.channel(`userIds/${user._id}`).join(connection);
+
+      joinChannels(user, connection)
 
       console.log('login', user)
       const playerData = {
@@ -52,6 +90,7 @@ export default function (app: Application) {
         sId: 0
       };
       playerService.create(playerData);
+      console.log('login', app.channels);
     }
   });
 
@@ -59,8 +98,8 @@ export default function (app: Application) {
     if (connection) {
       const user = connection.user;
       //When logging out, leave all channels before joining anonymous channel
-      console.log('logout', connection);
-      app.channel(app.channels).leave(connection);
+      console.log('logout', app.channels);
+      // app.channel(app.channels).leave(connection);
       app.channel('anonymous').join(connection);
 
       playerService.remove(user._id);
@@ -89,4 +128,9 @@ export default function (app: Application) {
   //     app.channel(`emails/${data.recipientEmail}`)
   //   ];
   // });
+  // On `updated` and `patched`, leave and re-join with new room assignments
+  app.service('players').on('updated', updateChannels);
+  app.service('players').on('patched', updateChannels);
+  // On `removed`, remove the connection from all channels
+  app.service('players').on('removed', leaveChannels);
 };

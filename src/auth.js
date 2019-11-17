@@ -37,6 +37,7 @@ const auth = {
     try {
       await api.logout()
     } catch (err) {
+      console.log('logout error', err)
       return Promise.reject(err)
     }
   },
