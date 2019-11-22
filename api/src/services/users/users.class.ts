@@ -12,8 +12,10 @@ const query = 's=60';
 interface UserData {
   _id?: string;
   email: string;
+  nick?: string;
   password: string;
   avatar?: string;
+  country?: string;
   githubId?: string;
 }
 
@@ -24,7 +26,10 @@ export class Users extends Service<UserData> {
 
   create (data: UserData, params?: Params) {
     // This is the information we want from the user signup data
+    console.log('user', data, params);
     const { email, password, githubId } = data;
+    const nick = email.split('@')[0];
+    const country = 'US';
     // Gravatar uses MD5 hashes from an email address (all lowercase) to get the image
     const hash = crypto.createHash('md5').update(email.toLowerCase()).digest('hex');
     // The full avatar URL
@@ -32,11 +37,14 @@ export class Users extends Service<UserData> {
     // The complete user
     const userData = {
       email,
+      nick,
       password,
-      githubId,
-      avatar
+      avatar,
+      country,
+      githubId
     };
 
+    console.log('user', userData);
     // Call the original `create` method with existing `params` and new data
     return super.create(userData, params);
   }

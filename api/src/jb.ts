@@ -1,4 +1,4 @@
-const getMIX = function () {
+export const getMIX = () => {
   let t = new Date().getTime();
   switch (t % 3) {
     case 1:
@@ -10,7 +10,7 @@ const getMIX = function () {
   }
 }
 
-const isPlayer = function (seat: number) {
+export const isPlayer = (seat: number) => {
   switch (seat) {
     case 1:
     case 2:
@@ -22,7 +22,7 @@ const isPlayer = function (seat: number) {
   }
 }
 
-const vulN = function (bn: number) {
+const vulN = (bn: number) => {
   switch (bn % 16) {
     case 1:
     case 8:
@@ -48,13 +48,13 @@ const vulN = function (bn: number) {
   }
 }
 
-const N52Suit = function (n52: number) {
+const N52Suit = (n52: number) => {
   n52--;
   let n13 = Math.floor(n52 / 13);
   return N4Suit(n13);
 }
 
-const N52Rank = function (n52: number) {
+const N52Rank = (n52: number) => {
   let n13 = n52 % 13;
   switch (n13) {
     case 0:
@@ -70,7 +70,7 @@ const N52Rank = function (n52: number) {
   }
 }
 
-const N4Suit = function (n4: number) {
+const N4Suit = (n4: number) => {
   switch (n4) {
     case 4:
       return 'NT';
@@ -87,4 +87,4 @@ const N4Suit = function (n4: number) {
   }
 }
 
-exports = { getMIX, isPlayer, vulN, N4Suit, N52Suit, N52Rank };
+// module.exports = { getMIX, isPlayer, vulN, N4Suit, N52Suit, N52Rank };

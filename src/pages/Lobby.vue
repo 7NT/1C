@@ -106,7 +106,6 @@ export default {
   data () {
     return {
       user: null,
-      chats: [],
       myPlayer: null,
       splitterModel: 50, // start at 50%
       roomId: 'Lobby',
@@ -141,8 +140,13 @@ export default {
     }
   },
   computed: {
-    ...mapState('jstore', ['players', 'tables']),
-    ...mapGetters('jstore', ['getChats'])
+    ...mapState('jstore', ['players', 'tables', 'chats']),
+    ...mapGetters('jstore', ['getChats']),
+    lobbyChats () {
+      let chats = this.getChats('#Lobby')
+      console.log(chats)
+      return chats
+    }
   },
   methods: {
     ...mapActions('jstore', [
@@ -163,11 +167,11 @@ export default {
     }
   },
   mounted () {
+    // if (!this.user.county) this.$router.push({ name: 'profile' })
   },
   created () {
     this.$parent.page = 'Lobby'
     this.user = this.$attrs.user
-    this.chats = this.$attrs.chats
   },
   watch: {
 

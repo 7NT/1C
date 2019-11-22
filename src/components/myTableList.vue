@@ -23,12 +23,12 @@
             no-caps
             no-wrap
             @click='sit(n)'
-            :label='username(n)'
+            :label='nickname(n)'
             icon='event_seat'
             :color='scolor(n)'
             style='width:100px'
           >
-            <q-tooltip>{{ sname[n - 1] }}</q-tooltip>
+            <q-tooltip>{{ sname[n-1] }}</q-tooltip>
           </q-btn>
           <!--
           <q-separator
@@ -60,8 +60,8 @@
 </template>
 
 <script>
-import { userService } from 'src/api'
-import { mapGetters, mapActions } from 'vuex'
+// import { userService } from 'src/api'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'myTableList',
@@ -70,7 +70,7 @@ export default {
   data () {
     return {
       sname: ['North', 'East', 'South', 'West'],
-      uname: [null, null, null, null]
+      pname: [null, null, null, null]
     }
   },
   computed: {
@@ -94,49 +94,32 @@ export default {
     }
   },
   methods: {
-    ...mapActions('jstore', ['addUser']),
-    getPlayers () {
-      for (let n in [0, 1, 2, 3]) {
-        let uid = this.myTable.seats[n]
-        if (uid) this.getPlayer(n, uid)
+    // ...mapActions('jstore', ['addUser']),
+    nickname (n) {
+      let uId = this.myTable.seats[n - 1]
+      if (!uId) {
+        return 'SIT...'
+      } else {
+        let p = this.getPlayerById(uId)
+        return p ? p.nick : 'SIT...'
       }
-    },
-    getPlayer (n, uid) {
-      let user = this.getPlayerById(uid)
-      if (!user) user = this.findUser(n, uid)
-      if (user) {
-        if (user.state >= 0) this.uname[n] = user.username
-        else this.uname[n] = `[${user.username}]`
-      }
-    },
-    findUser (n, uid) {
-      userService.get(uid)
-        .then(user => {
-          if (user) {
-            user.state = -1
-            this.uname[n] = `[${user.username}]`
-            this.addUser(user)
-            // this.$forceUpdate()
-          }
-        })
-    },
-    username (n) {
-      return this.uname[n - 1] || 'SIT...'
     },
     scolor (n) {
-      let userId = this.myTable.seats[n - 1]
-      return userId ? 'info' : 'positive'
+      let uId = this.myTable.seats[n - 1]
+      return uId ? 'info' : 'positive'
     },
     sit (sId) {
       if (!this.myTable.seats[sId - 1]) {
-        this.$emit('onSit', { tId: this.myTable._id, sId })
+        this.$emit('onSit', { tId: this.myTable.id, sId })
       } else {
         this.$q.notify({ type: 'negative', message: 'This seat is taken' })
       }
     }
   },
-  created () {
-    this.getPlayers()
+  watch: {
+    myTable (n, o) {
+      console.log('t', n)
+    }
   }
 }
 </script>

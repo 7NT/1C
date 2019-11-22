@@ -89,7 +89,7 @@ export default {
               color: 'positive',
               message: 'You are now logged in'
             })
-            this.goTo('profile')
+            this.goTo('lobby')
           })
           .catch((err) => {
             console.error(err)

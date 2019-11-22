@@ -41,6 +41,15 @@
         <q-btn
           flat
           round
+          dense
+          icon="mdi-account-search"
+          @click="playerList = !playerList"
+          aria-label="Player List..."
+          v-show="authenticated"
+        />
+        <q-btn
+          flat
+          round
           @click="goTo('profile')"
           v-if='authenticated'
         >
@@ -163,12 +172,64 @@
         </q-item>
       </q-list>
     </q-drawer>
+    <q-drawer
+      side="right"
+      overlay
+      bordered
+      elevated
+      v-model="playerList"
+      v-show="authenticated"
+      :content-class="$q.theme === 'mat' ? 'bg-grey-3' : null"
+      :content-style="{ fontSize: '16px' }"
+    >
+      <q-toolbar
+        inset
+        class="bg-info text-white shadow-2"
+      >
+        <q-btn
+          flat
+          dense
+        >
+          <q-icon name="mdi-account-search" />
+        </q-btn>
+        <q-toolbar-title>Players:</q-toolbar-title>
+      </q-toolbar>
+
+      <q-list bordered>
+        <q-item
+          v-for="p in players"
+          :key="p.id"
+          class="q-my-sm"
+          clickable
+          v-ripple
+        >
+          <q-item-section avatar>
+            <q-avatar
+              color="secondary"
+              text-color="white"
+            >
+              <img :src="p.avatar" />
+            </q-avatar>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>{{ p.username }}</q-item-label>
+            <q-item-label
+              caption
+              lines="1"
+            >@{{ p.tId }}</q-item-label>
+          </q-item-section>
+          <q-item-section side>
+            <q-icon
+              name="chat_bubble"
+              color="green"
+            />
+          </q-item-section>
+        </q-item>
+      </q-list>
+    </q-drawer>
 
     <q-page-container>
-      <router-view
-        :user='user'
-        :chats='chats'
-      ></router-view>
+      <router-view :user='user'></router-view>
     </q-page-container>
 
     <q-footer
@@ -225,7 +286,7 @@
 <script>
 import { openURL } from 'quasar'
 import { mapState, mapActions } from 'vuex'
-import { chatService, playerService, tableService } from 'src/api'
+import { userService, chatService, playerService, tableService } from 'src/api'
 import auth from 'src/auth'
 
 export default {
@@ -234,6 +295,7 @@ export default {
   data () {
     return {
       leftDrawerOpen: this.$q.platform.is.desktop,
+      playerList: this.$q.platform.is.desktop,
       splitterModel: 50, // start at 50%
       page: '',
       chats: [],
@@ -248,7 +310,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('jstore', ['setUser', 'setPlayers', 'setTables']),
+    ...mapActions('jstore', ['setUser', 'setChats', 'setPlayer', 'setTable', 'setPlayers', 'setTables']),
     openURL,
     goTo (route) {
       if (this.$route.name !== route) this.$router.push({ name: route })
@@ -270,8 +332,12 @@ export default {
         })
     },
     onServices () {
+      userService.on('update', user => {
+        this.user = user
+      })
       chatService.on('created', chat => {
-        this.chats.unshift(chat)
+        // this.chats.unshift(chat)
+        this.setChats(chat)
       })
       playerService.find().then(response => {
         this.setPlayers(response.data)
@@ -280,9 +346,11 @@ export default {
         this.onPlayer(player)
       })
       playerService.on('patched', player => {
+        console.log('player patched', player)
         this.onPlayer(player)
       })
       playerService.on('removed', player => {
+        console.log('player removed', player)
         player.state = -1
         this.onPlayer(player)
       })
@@ -293,14 +361,15 @@ export default {
         // this.updatePlayer(player)
       })
       tableService.on('created', table => {
-        // this.onTable(table)
+        this.onTable(table)
       })
       tableService.on('patched', table => {
-        // this.onTable(table)
+        this.onTable(table)
       })
       tableService.on('removed', table => {
+        console.log('remove', table)
         table.state = -1
-        // this.onTable(table)
+        this.onTable(table)
       })
     },
     onChat (event) {
@@ -309,10 +378,10 @@ export default {
       }
     },
     onPlayer (player) {
-      // this.setPlayer(player)
+      this.setPlayer(player)
     },
     onTable (table) {
-      // this.setTable(table)
+      this.setTable(table)
     },
     send () {
       if (this.chat) {

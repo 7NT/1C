@@ -1,17 +1,17 @@
-import * as authentication from '@feathersjs/authentication';
-import player from '../../hooks/player';
+// import * as authentication from '@feathersjs/authentication';
+import * as player from '../../hooks/player';
 // Don't remove this comment. It's needed to format import lines nicely.
 
-const { authenticate } = authentication.hooks;
+// const { authenticate } = authentication.hooks;
 
 export default {
   before: {
-    all: [authenticate('jwt')],
+    all: [],
     find: [],
     get: [],
     create: [],
     update: [],
-    patch: [player()],
+    patch: [player.seatCheck()],
     remove: []
   },
 

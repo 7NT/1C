@@ -12,11 +12,8 @@ const auth = {
   },
 
   register (credential) {
-    // return api.service('users').create(credential)
-    return api.service('users').create({
-      email: credential.email,
-      password: credential.password
-    })
+    console.log('register', credential)
+    return api.service('users').create(credential)
   },
 
   login (credentials) {
@@ -32,14 +29,9 @@ const auth = {
     }
   },
 
-  async signout () {
+  signout () {
     // api.service('players').remove(this.user._id)
-    try {
-      await api.logout()
-    } catch (err) {
-      console.log('logout error', err)
-      return Promise.reject(err)
-    }
+    return api.logout()
   },
 
   onLogout (callback) {

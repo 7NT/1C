@@ -10,7 +10,7 @@ export default function (app: Application) {
   const playerService = app.service('players')
 
   // Join a channel given a user and connection
-  const joinChannels = (user:any, connection:any) => {
+  const joinChannels = (user: any, connection: any) => {
     app.channel('authenticated').join(connection);
     // Assuming that the chat room/user assignment is stored
     // on an array of the user
@@ -25,14 +25,14 @@ export default function (app: Application) {
   }
 
   // Get a user to leave all channels
-  const leaveChannels = (user:any) => {
-    app.channel(app.channels).leave((connection:any) =>
+  const leaveChannels = (user: any) => {
+    app.channel(app.channels).leave((connection: any) =>
       connection.user._id === user._id
     );
   }
 
   // Leave and re-join all channels with new user information
-  const updateChannels = (user:any) => {
+  const updateChannels = (user: any) => {
     // Find all connections for this user
     const { connections } = app.channel(app.channels).filter(connection =>
       connection.user._id === user._id
@@ -81,16 +81,16 @@ export default function (app: Application) {
 
       joinChannels(user, connection)
 
-      console.log('login', user)
       const playerData = {
-        _id: user._id,
-        // nick: user.nick,
+        id: user._id,
+        nick: user.nick,
         avatar: user.avatar,
+        country: user.country,
         state: 0,
-        sId: 0
+        tId: user.tId || null,
+        sId: user.sId || 0
       };
       playerService.create(playerData);
-      console.log('login', app.channels);
     }
   });
 

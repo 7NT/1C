@@ -6,15 +6,6 @@ export const setUser = (state, payload) => {
   state.user = payload
 }
 
-export const addUser = (state, payload) => {
-  const i = state.users.findIndex(u => u._id === payload._id)
-  if (i >= 0) {
-    state.users.splice(i, 1, payload)
-  } else {
-    state.users.push(payload)
-  }
-}
-
 export const setPlayers = (state, payload) => {
   state.players = payload
 }
@@ -42,7 +33,7 @@ export const setPlayer = (state, payload) => {
 }
 
 export const setTable = (state, payload) => {
-  const i = state.tables.findIndex(t => t._id === payload._id)
+  const i = state.tables.findIndex(t => t.id === payload.id)
   if (i >= 0) {
     if (payload.state < 0) state.tables.splice(i, 1)
     else state.tables.splice(i, 1, payload)

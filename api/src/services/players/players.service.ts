@@ -2,7 +2,7 @@
 import { ServiceAddons } from '@feathersjs/feathers';
 import { Application } from '../../declarations';
 import { Players } from './players.class';
-import createModel from '../../models/players.model';
+// import createModel from '../../models/players.model';
 import hooks from './players.hooks';
 
 // Add this service to the service type index
@@ -14,7 +14,7 @@ declare module '../../declarations' {
 
 export default function (app: Application) {
   const options = {
-    Model: createModel(app),
+    // Model: createModel(app),
     paginate: app.get('paginate')
   };
 
