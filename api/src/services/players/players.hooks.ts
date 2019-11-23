@@ -1,5 +1,5 @@
 // import * as authentication from '@feathersjs/authentication';
-import * as player from '../../hooks/player';
+import { before_Sit, after_Sit } from '../../hooks/player';
 // Don't remove this comment. It's needed to format import lines nicely.
 
 // const { authenticate } = authentication.hooks;
@@ -11,7 +11,7 @@ export default {
     get: [],
     create: [],
     update: [],
-    patch: [player.seatCheck()],
+    patch: [before_Sit()],
     remove: []
   },
 
@@ -21,7 +21,7 @@ export default {
     get: [],
     create: [],
     update: [],
-    patch: [],
+    patch: [after_Sit()],
     remove: []
   },
 

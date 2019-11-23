@@ -340,9 +340,10 @@ export default {
         this.setChats(chat)
       })
       playerService.find().then(response => {
-        this.setPlayers(response.data)
+        // this.setPlayers(response.data)
       })
       playerService.on('created', player => {
+        console.log('create', player)
         this.onPlayer(player)
       })
       playerService.on('patched', player => {
@@ -427,6 +428,8 @@ export default {
       this.user = null
       this.goTo('home')
     })
+  },
+  watch: {
   },
   beforeDestroy () { }
 }
