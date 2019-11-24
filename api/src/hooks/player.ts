@@ -4,7 +4,7 @@ import { Hook, HookContext } from '@feathersjs/feathers'
 import { isPlayer, getMIX } from '../jb'
 
 
-const before_Sit = (): Hook => {
+const sitBefore = (): Hook => {
   return async (context: HookContext) => {
     const id = context.id
     const { tId: tId1, sId: sId1 } = context.data
