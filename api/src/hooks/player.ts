@@ -14,7 +14,6 @@ const sitBefore = (): Hook => {
       const tableService = context.app.service('tables')
       const user = connection.user
       const { _id: uId, tId: tId0, sId: sId0 } = user
-      console.log('before', context.data, user)
 
       if (tId0 && tId0 != tId1) {  //leave table
         try {
@@ -78,16 +77,30 @@ const sitBefore = (): Hook => {
   }
 }
 
-const after_Sit = (): Hook => {
+const sitAfter = (): Hook => {
   return async (context: HookContext) => {
-    console.log('after', context.data)
     const { tId, sId } = context.data
     const { connection } = context.params
     if (connection) {
       const userService = context.app.service('users')
       const user = connection.user
 
-      console.log('after', context.data, user)
+      let userData = { tId, sId }
+      userService.patch(user._id, userData)
+    }
+    return Promise.resolve(context)
+  }
+}
+
+const sitReset = (): Hook => {
+  return async (context: HookContext) => {
+    console.log('reset', context.data)
+    const { tId, sId } = context.data
+    const { connection } = context.params
+    if (connection) {
+      const userService = context.app.service('users')
+      const user = connection.user
+
       let userData = { tId, sId }
       userService.patch(user._id, userData)
     }
@@ -96,6 +109,6 @@ const after_Sit = (): Hook => {
 }
 
 export {
-  before_Sit,
-  after_Sit
+  sitBefore,
+  sitAfter
 }
