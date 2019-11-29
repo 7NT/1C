@@ -87,12 +87,57 @@
 
       </q-splitter>
     </div>
+    <q-footer elevated>
+      <q-toolbar class="bg-primary text-white rounded-borders">
+        <q-btn
+          round
+          dense
+          flat
+          icon="menu"
+          class="q-mr-xs"
+        />
+        <q-avatar class="gt-xs">
+          <img :src="user.avatar" />
+        </q-avatar>
+        <q-space />
+        <div class="full-width">
+          <q-input
+            dark
+            autofocus
+            standout
+            v-model="chat"
+            @keypress="onChat"
+          >
+            <template v-slot:append>
+              <q-icon
+                v-if="chat === ''"
+                name="chat"
+              />
+              <q-icon
+                v-else
+                name="clear"
+                class="cursor-pointer"
+                @click="chat = ''"
+              />
+            </template>
+          </q-input>
+        </div>
+        <q-btn
+          flat
+          round
+          dense
+          icon="menu"
+          @click="right = !right"
+          aria-label="Toggle menu on right side"
+        />
+      </q-toolbar>
+    </q-footer>
   </q-page>
 </template>
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex'
-import { playerService } from 'src/api'
+import { playerService, chatService } from 'src/api'
 import moment from 'moment'
 import myTableList from 'src/components/myTableList'
 import myTablePlay from 'src/components/myTablePlay'
@@ -136,7 +181,8 @@ export default {
         }
       ],
       mix: ['MP', 'IMP', 'XIMP'],
-      myBT: null
+      myBT: null,
+      chat: null
     }
   },
   computed: {
@@ -155,6 +201,27 @@ export default {
       'setPlayer',
       'setTable'
     ]),
+    onChat (event) {
+      if (event.key === 'Enter') {
+        this.send()
+      }
+    },
+    send () {
+      if (this.chat) {
+        let _chat = {
+          from: {
+            userId: this.user._id,
+            avatar: this.user.avatar
+          },
+          to: this.chatTo || '#Lobby',
+          text: this.chat
+        }
+
+        chatService.create(_chat).then(() => {
+          this.chat = ''
+        })
+      }
+    },
     isSent (chat) {
       return chat.from.userId === this.user._id
     },

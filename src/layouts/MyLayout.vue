@@ -1,7 +1,10 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout
+    view="lHh Lpr lFf"
+    class="shadow-2 rounded-border"
+  >
     <q-header elevated>
-      <q-toolbar>
+      <q-toolbar class="gl0ssy">
         <q-btn
           flat
           dense
@@ -15,17 +18,28 @@
 
         <div>Quasar v{{ $q.version }}</div>
 
-        <q-btn flat @click="goTo('signin')" v-show="!authenticated"
-          >Sign In</q-btn
+        <q-btn
+          flat
+          @click="goTo('signin')"
+          v-show="!authenticated"
+        >Sign In</q-btn>
+        <q-btn
+          flat
+          @click="goTo('register')"
+          v-show="!authenticated"
+        >Register</q-btn>
+        <q-btn
+          flat
+          round
+          @click="goTo('home')"
+          v-show="authenticated"
         >
-        <q-btn flat @click="goTo('register')" v-show="!authenticated"
-          >Register</q-btn
-        >
-        <q-btn flat round @click="goTo('home')" v-show="authenticated">
           <q-icon name="home" />
-          <q-tooltip anchor="bottom middle" self="top middle" :offset="[0, 20]"
-            >Home</q-tooltip
-          >
+          <q-tooltip
+            anchor="bottom middle"
+            self="top middle"
+            :offset="[0, 20]"
+          >Home</q-tooltip>
         </q-btn>
         <q-btn
           flat
@@ -36,19 +50,33 @@
           aria-label="Player List..."
           v-show="authenticated"
         />
-        <q-btn flat round @click="goTo('profile')" v-if="authenticated">
+        <q-btn
+          flat
+          round
+          @click="goTo('profile')"
+          v-if="authenticated"
+        >
           <q-avatar class="gt-xs">
             <img :src="user.avatar" />
           </q-avatar>
-          <q-tooltip anchor="bottom middle" self="top middle" :offset="[0, 20]"
-            >Profile</q-tooltip
-          >
+          <q-tooltip
+            anchor="bottom middle"
+            self="top middle"
+            :offset="[0, 20]"
+          >Profile</q-tooltip>
         </q-btn>
-        <q-btn flat round @click="signout" v-show="authenticated">
+        <q-btn
+          flat
+          round
+          @click="signout"
+          v-show="authenticated"
+        >
           <q-icon name="exit_to_app" />
-          <q-tooltip anchor="bottom middle" self="top middle" :offset="[0, 20]"
-            >Signout</q-tooltip
-          >
+          <q-tooltip
+            anchor="bottom middle"
+            self="top middle"
+            :offset="[0, 20]"
+          >Signout</q-tooltip>
         </q-btn>
       </q-toolbar>
     </q-header>
@@ -61,7 +89,12 @@
     >
       <q-list>
         <q-item-label header>Essential Links</q-item-label>
-        <q-item clickable tag="a" target="_blank" href="https://quasar.dev">
+        <q-item
+          clickable
+          tag="a"
+          target="_blank"
+          href="https://quasar.dev"
+        >
           <q-item-section avatar>
             <q-icon name="school" />
           </q-item-section>
@@ -152,8 +185,14 @@
       :content-class="$q.theme === 'mat' ? 'bg-grey-3' : null"
       :content-style="{ fontSize: '16px' }"
     >
-      <q-toolbar inset class="bg-info text-white shadow-2">
-        <q-btn flat dense>
+      <q-toolbar
+        inset
+        class="bg-info text-white shadow-2"
+      >
+        <q-btn
+          flat
+          dense
+        >
           <q-icon name="mdi-account-search" />
         </q-btn>
         <q-toolbar-title>Players:</q-toolbar-title>
@@ -168,16 +207,25 @@
           v-ripple
         >
           <q-item-section avatar>
-            <q-avatar color="secondary" text-color="white">
+            <q-avatar
+              color="secondary"
+              text-color="white"
+            >
               <img :src="p.avatar" />
             </q-avatar>
           </q-item-section>
           <q-item-section>
             <q-item-label>{{ p.nick }}</q-item-label>
-            <q-item-label caption lines="1">@{{ p.tId }}</q-item-label>
+            <q-item-label
+              caption
+              lines="1"
+            >@{{ p.tId }}</q-item-label>
           </q-item-section>
           <q-item-section side>
-            <q-icon name="chat_bubble" color="green" />
+            <q-icon
+              name="chat_bubble"
+              color="green"
+            />
           </q-item-section>
         </q-item>
       </q-list>
@@ -187,36 +235,6 @@
       <router-view :user="user"></router-view>
     </q-page-container>
 
-    <q-footer elevated v-if="authenticated">
-      <q-toolbar class="bg-primary text-white rounded-borders">
-        <q-btn round dense flat icon="menu" class="q-mr-xs" />
-        <q-avatar class="gt-xs">
-          <img :src="user.avatar" />
-        </q-avatar>
-        <q-space />
-        <div class="full-width">
-          <q-input dark autofocus standout v-model="chat" @keypress="onChat">
-            <template v-slot:append>
-              <q-icon v-if="chat === ''" name="chat" />
-              <q-icon
-                v-else
-                name="clear"
-                class="cursor-pointer"
-                @click="chat = ''"
-              />
-            </template>
-          </q-input>
-        </div>
-        <q-btn
-          flat
-          round
-          dense
-          icon="menu"
-          @click="right = !right"
-          aria-label="Toggle menu on right side"
-        />
-      </q-toolbar>
-    </q-footer>
   </q-layout>
 </template>
 
@@ -233,10 +251,8 @@ export default {
     return {
       leftDrawerOpen: this.$q.platform.is.desktop,
       playerList: this.$q.platform.is.desktop,
-      splitterModel: 50, // start at 50%
       page: '',
       chats: [],
-      chat: null,
       user: null
     }
   },
@@ -317,32 +333,11 @@ export default {
         this.onTable(table)
       })
     },
-    onChat (event) {
-      if (event.key === 'Enter') {
-        this.send()
-      }
-    },
     onPlayer (player) {
       this.setPlayer(player)
     },
     onTable (table) {
       this.setTable(table)
-    },
-    send () {
-      if (this.chat) {
-        let _chat = {
-          from: {
-            userId: this.user._id,
-            avatar: this.user.avatar
-          },
-          to: this.chatTo || '#Lobby',
-          text: this.chat
-        }
-
-        chatService.create(_chat).then(() => {
-          this.chat = ''
-        })
-      }
     }
   },
   mounted () {
@@ -373,6 +368,6 @@ export default {
     })
   },
   watch: {},
-  beforeDestroy () {}
+  beforeDestroy () { }
 }
 </script>
