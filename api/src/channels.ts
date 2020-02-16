@@ -11,7 +11,8 @@ export default function (app: Application) {
 
   // Join a channel given a user and connection
   const joinChannels = (user: any, connection: any) => {
-    app.channel('authenticated').join(connection);
+    //app.channel('authenticated').join(connection);
+    app.channel('#Lobby').join(connection);
     // Assuming that the chat room/user assignment is stored
     // on an array of the user
     /*
@@ -21,7 +22,8 @@ export default function (app: Application) {
     */
     // Easily organize users by email and userid for things like messaging
     // app.channel(`emails/${user.email}`).join(channel);
-    app.channel(`userIds/${user._id}`).join(connection);
+    //app.channel(`userIds/${user._id}`).join(connection);
+    app.channel(`@${user._id}`).join(connection);
   }
 
   // Get a user to leave all channels
@@ -47,7 +49,8 @@ export default function (app: Application) {
 
   app.on('connection', (connection: any) => {
     // On a new real-time connection, add it to the anonymous channel
-    app.channel('anonymous').join(connection);
+    //app.channel('anonymous').join(connection);
+    app.channel('@Anonymous').join(connection);
   });
 
   app.on('disconnect', (connection: any) => {
@@ -62,7 +65,8 @@ export default function (app: Application) {
       const user = connection.user;
 
       // The connection is no longer anonymous, remove it
-      app.channel('anonymous').leave(connection);
+      //app.channel('anonymous').leave(connection);
+      app.channel('@Anonymous').leave(connection);
 
       // Add it to the authenticated user channel
       // app.channel('authenticated').join(connection);
@@ -100,7 +104,8 @@ export default function (app: Application) {
       //When logging out, leave all channels before joining anonymous channel
       console.log('logout', app.channels);
       // app.channel(app.channels).leave(connection);
-      app.channel('anonymous').join(connection);
+      //app.channel('anonymous').join(connection);
+      app.channel('@Anonymous').join(connection);
 
       playerService.remove(user._id);
     }
@@ -114,7 +119,8 @@ export default function (app: Application) {
     console.log('Publishing all events to all authenticated users. See `channels.js` and https://docs.feathersjs.com/api/channels.html for more information.'); // eslint-disable-line
 
     // e.g. to publish all service events to all authenticated users use
-    return app.channel('authenticated');
+    //return app.channel('authenticated');
+    return app.channel('@Lobby');
   });
 
   // Here you can also add service specific event publishers
