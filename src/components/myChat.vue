@@ -17,7 +17,7 @@
 import moment from 'moment'
 
 export default {
-  // name: 'ComponentName',
+  name: 'myChat',
   data () {
     return {
       chats: [],

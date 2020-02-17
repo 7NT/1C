@@ -50,7 +50,7 @@
                 </q-tab-panel>
 
                 <q-tab-panel name='My Table'>
-                  <myTablePlay
+                  <myPlayTable
                     :myPlayer='myPlayer'
                     v-on:onSit='onSit'
                     class='myTable'
@@ -62,7 +62,7 @@
         </template>
 
         <template v-slot:after>
-          <div class="q-pa-md">
+          <div class='q-pa-md'>
             <q-expansion-item
               default-opened
               dense
@@ -84,39 +84,38 @@
             </q-expansion-item>
           </div>
         </template>
-
       </q-splitter>
     </div>
     <q-footer elevated>
-      <q-toolbar class="bg-primary text-white rounded-borders">
+      <q-toolbar class='bg-primary text-white rounded-borders'>
         <q-btn
           round
           dense
           flat
-          icon="menu"
-          class="q-mr-xs"
+          icon='menu'
+          class='q-mr-xs'
         />
-        <q-avatar class="gt-xs">
-          <img :src="user.avatar" />
+        <q-avatar class='gt-xs'>
+          <img :src='user.avatar' />
         </q-avatar>
         <q-space />
-        <div class="full-width">
+        <div class='full-width'>
           <q-input
             dark
             autofocus
             standout
-            v-model="chat"
-            @keypress="onChat"
+            v-model='chat'
+            @keypress='onChat'
           >
             <template v-slot:append>
               <q-icon
                 v-if="chat === ''"
-                name="chat"
+                name='chat'
               />
               <q-icon
                 v-else
-                name="clear"
-                class="cursor-pointer"
+                name='clear'
+                class='cursor-pointer'
                 @click="chat = ''"
               />
             </template>
@@ -126,9 +125,9 @@
           flat
           round
           dense
-          icon="menu"
-          @click="right = !right"
-          aria-label="Toggle menu on right side"
+          icon='menu'
+          @click='right = !right'
+          aria-label='Toggle menu on right side'
         />
       </q-toolbar>
     </q-footer>
@@ -140,13 +139,13 @@ import { mapState, mapGetters, mapActions } from 'vuex'
 import { playerService, chatService } from 'src/api'
 import moment from 'moment'
 import myTableList from 'src/components/myTableList'
-import myTablePlay from 'src/components/myTablePlay'
+import myPlayTable from 'src/components/myPlayTable'
 
 export default {
   name: 'Lobby',
   components: {
     myTableList,
-    myTablePlay
+    myPlayTable
   },
   data () {
     return {
@@ -240,8 +239,6 @@ export default {
     this.$parent.page = 'Lobby'
     this.user = this.$attrs.user
   },
-  watch: {
-
-  }
+  watch: {}
 }
 </script>
